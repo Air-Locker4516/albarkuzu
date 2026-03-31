@@ -143,6 +143,13 @@ const demoForm = document.getElementById('demoForm');
 const demoResult = document.getElementById('demoResult');
 const resultCard = document.getElementById('resultCard');
 
+// Customization state
+let isCustomizeMode = false;
+let currentItems = [];
+let removedItems = [];
+let addedItems = [];
+let basePrice = 0;
+
 // Duration buttons
 document.querySelectorAll('.dur-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -187,6 +194,44 @@ const packageItems = {
   },
 };
 
+// Add-on items database
+const addonItems = {
+  clothing: [
+    { name: 'Extra T-shirt', price: 5 },
+    { name: 'Casual shorts', price: 8 },
+    { name: 'Rain jacket', price: 15 },
+    { name: 'Sleepwear set', price: 10 },
+    { name: 'Formal tie', price: 7 },
+    { name: 'Socks (3 pairs)', price: 4 },
+    { name: 'Underwear set', price: 6 },
+    { name: 'Workout clothes', price: 12 },
+  ],
+  accessories: [
+    { name: 'Travel backpack', price: 18 },
+    { name: 'Umbrella', price: 5 },
+    { name: 'Passport holder', price: 6 },
+    { name: 'Luggage lock', price: 4 },
+    { name: 'Neck wallet', price: 5 },
+    { name: 'Travel pillow (premium)', price: 12 },
+  ],
+  tech: [
+    { name: 'Power bank 10000mAh', price: 15 },
+    { name: 'USB-C cable', price: 4 },
+    { name: 'Travel adapter (EU)', price: 6 },
+    { name: 'Wireless earbuds', price: 20 },
+    { name: 'Kindle e-reader', price: 25 },
+    { name: 'Laptop sleeve', price: 10 },
+  ],
+  hygiene: [
+    { name: 'Sunscreen SPF30', price: 5 },
+    { name: 'Travel deodorant', price: 3 },
+    { name: 'Toothbrush kit', price: 4 },
+    { name: 'Skincare mini set', price: 8 },
+    { name: 'Hand sanitizer', price: 2 },
+    { name: 'First aid mini kit', price: 7 },
+  ]
+};
+
 demoForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -205,37 +250,255 @@ demoForm.addEventListener('submit', (e) => {
 
   // Determine recommended package
   let pkg = 'Economy Package';
-  let price = '\u20AC42';
+  let price = 42;
   if (parseInt(days) <= 1 && purpose === 'transit') {
     pkg = 'Handbag Package';
-    price = '\u20AC15';
+    price = 15;
   } else if (purpose === 'business') {
     pkg = 'Standard Package';
-    price = '\u20AC85';
+    price = 85;
   } else if (parseInt(days) >= 5) {
     pkg = 'Standard Package';
-    price = '\u20AC' + (75 + (parseInt(days) - 3) * 12);
+    price = 75 + (parseInt(days) - 3) * 12;
   }
+
+  basePrice = price;
 
   // Update result card
   document.getElementById('resultPackage').textContent = pkg;
   document.getElementById('resultRoute').textContent = `Istanbul IST \u2192 ${city.name} ${city.code}`;
   document.getElementById('weatherText').textContent = city.weather;
   document.querySelector('.weather-icon').textContent = city.icon;
-  document.getElementById('resultPrice').textContent = price;
 
-  const itemsList = document.getElementById('resultItems');
-  itemsList.innerHTML = '';
-  allItems.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = item;
-    itemsList.appendChild(li);
-  });
+  // Reset customization state
+  isCustomizeMode = false;
+  currentItems = allItems.map(name => ({ name, isAI: true, price: 0 }));
+  removedItems = [];
+  addedItems = [];
+
+  const customizeBtn = document.getElementById('customizeToggle');
+  customizeBtn.classList.remove('active');
+  document.getElementById('addItemsPanel').classList.add('hidden');
+  document.getElementById('removedItemsBar').classList.add('hidden');
+  document.getElementById('priceNote').classList.add('hidden');
+
+  renderItems();
+  updatePrice();
 
   // Show result
   demoResult.querySelector('.result-placeholder')?.classList.add('hidden');
   resultCard.classList.remove('hidden');
 });
+
+// Render items list
+function renderItems() {
+  const itemsList = document.getElementById('resultItems');
+  itemsList.innerHTML = '';
+
+  currentItems.forEach((item, index) => {
+    const li = document.createElement('li');
+    if (isCustomizeMode) {
+      li.classList.add('customizable');
+    }
+
+    // Item content
+    const contentSpan = document.createElement('span');
+    contentSpan.className = 'item-content';
+    contentSpan.textContent = item.name;
+
+    // Tag
+    if (item.isAI) {
+      const tag = document.createElement('span');
+      tag.className = 'item-tag item-tag-ai';
+      tag.textContent = 'AI';
+      contentSpan.appendChild(tag);
+    } else {
+      const tag = document.createElement('span');
+      tag.className = 'item-tag item-tag-added';
+      tag.textContent = 'ADDED';
+      contentSpan.appendChild(tag);
+    }
+
+    li.appendChild(contentSpan);
+
+    // Remove button (only in customize mode)
+    if (isCustomizeMode) {
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'item-remove-btn';
+      removeBtn.type = 'button';
+      removeBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+      removeBtn.addEventListener('click', () => removeItem(index));
+      li.appendChild(removeBtn);
+    }
+
+    // Add slide-in animation for newly added items
+    if (!item.isAI && item.justAdded) {
+      li.classList.add('item-added');
+      item.justAdded = false;
+    }
+
+    itemsList.appendChild(li);
+  });
+}
+
+// Get active add-items category
+function getActiveCategory() {
+  const activeBtn = document.querySelector('.add-cat-btn.active');
+  return activeBtn ? activeBtn.dataset.category : 'clothing';
+}
+
+// Refresh add items grid if panel is open
+function refreshAddItemsGrid() {
+  const panel = document.getElementById('addItemsPanel');
+  if (!panel.classList.contains('hidden')) {
+    renderAddItemsGrid(getActiveCategory());
+  }
+}
+
+// Remove an item
+function removeItem(index) {
+  const itemsList = document.getElementById('resultItems');
+  const li = itemsList.children[index];
+
+  if (li) {
+    li.classList.add('item-removing');
+
+    setTimeout(() => {
+      const removed = currentItems.splice(index, 1)[0];
+      removedItems.push(removed);
+      renderItems();
+      updateRemovedBar();
+      updatePrice();
+      refreshAddItemsGrid();
+    }, 300);
+  }
+}
+
+// Update removed items bar
+function updateRemovedBar() {
+  const bar = document.getElementById('removedItemsBar');
+  const count = document.getElementById('removedCount');
+
+  if (removedItems.length > 0) {
+    bar.classList.remove('hidden');
+    count.textContent = removedItems.length;
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+
+// Undo all removed items
+document.getElementById('undoRemoveBtn').addEventListener('click', () => {
+  currentItems = [...currentItems, ...removedItems.map(item => ({ ...item, justAdded: true }))];
+  removedItems = [];
+  renderItems();
+  updateRemovedBar();
+  updatePrice();
+  refreshAddItemsGrid();
+});
+
+// Update price
+function updatePrice() {
+  const addedCost = currentItems.reduce((sum, item) => sum + (item.price || 0), 0);
+  const removedSavings = removedItems.reduce((sum, item) => sum + (item.price || 0), 0);
+  const totalPrice = basePrice + addedCost - removedSavings;
+
+  const priceEl = document.getElementById('resultPrice');
+  priceEl.textContent = `\u20AC${totalPrice}`;
+
+  // Animate price change
+  priceEl.classList.remove('price-updated');
+  void priceEl.offsetWidth; // Force reflow
+  priceEl.classList.add('price-updated');
+
+  // Show price note if customized
+  const priceNote = document.getElementById('priceNote');
+  const noteText = document.getElementById('priceNoteText');
+  if (addedCost > 0 || removedItems.length > 0) {
+    priceNote.classList.remove('hidden');
+    const parts = [];
+    if (addedCost > 0) parts.push(`+\u20AC${addedCost} for added items`);
+    if (removedItems.length > 0) parts.push(`${removedItems.length} item(s) removed`);
+    noteText.textContent = parts.join(' · ');
+  } else {
+    priceNote.classList.add('hidden');
+  }
+}
+
+// Customize toggle
+document.getElementById('customizeToggle').addEventListener('click', () => {
+  isCustomizeMode = !isCustomizeMode;
+  const btn = document.getElementById('customizeToggle');
+  const panel = document.getElementById('addItemsPanel');
+
+  btn.classList.toggle('active', isCustomizeMode);
+
+  if (isCustomizeMode) {
+    panel.classList.remove('hidden');
+    renderAddItemsGrid('clothing');
+  } else {
+    panel.classList.add('hidden');
+  }
+
+  renderItems();
+});
+
+// Category buttons for add-items panel
+document.querySelectorAll('.add-cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.add-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAddItemsGrid(btn.dataset.category);
+  });
+});
+
+// Render add items grid
+function renderAddItemsGrid(category) {
+  const grid = document.getElementById('addItemsGrid');
+  grid.innerHTML = '';
+
+  const items = addonItems[category] || [];
+  items.forEach(item => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'add-item-chip';
+
+    const isAlreadyAdded = currentItems.some(ci => ci.name === item.name);
+    if (isAlreadyAdded) {
+      chip.classList.add('added');
+    }
+
+    chip.innerHTML = `
+      <span class="chip-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          ${isAlreadyAdded ? '<path d="M20 6L9 17l-5-5"/>' : '<path d="M12 5v14M5 12h14"/>'}
+        </svg>
+      </span>
+      <span>${item.name}</span>
+      <span class="add-item-price">${isAlreadyAdded ? 'Added' : '+\u20AC' + item.price}</span>
+    `;
+
+    if (!isAlreadyAdded) {
+      chip.addEventListener('click', () => {
+        addItemToSuitcase(item, chip, category);
+      });
+    }
+
+    grid.appendChild(chip);
+  });
+}
+
+// Add item to suitcase
+function addItemToSuitcase(item, chipEl, category) {
+  currentItems.push({ name: item.name, isAI: false, price: item.price, justAdded: true });
+  addedItems.push(item.name);
+
+  renderItems();
+  updatePrice();
+
+  // Update the chip to show "added"
+  renderAddItemsGrid(category);
+}
 
 // ===== ACTIVE NAV LINK ON SCROLL =====
 const sections = document.querySelectorAll('section[id]');

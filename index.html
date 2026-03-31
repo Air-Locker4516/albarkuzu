@@ -528,13 +528,43 @@
               <span id="weatherText">12&deg;C, Light Rain</span>
             </div>
             <div class="result-items">
-              <h4>Your Suitcase Contains:</h4>
+              <div class="result-items-header">
+                <h4>Your Suitcase Contains:</h4>
+                <button class="customize-toggle-btn" id="customizeToggle" type="button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  Customize
+                </button>
+              </div>
               <ul id="resultItems">
               </ul>
+              <!-- Removed items recovery -->
+              <div class="removed-items-bar hidden" id="removedItemsBar">
+                <span id="removedCount">0</span> item(s) removed
+                <button type="button" id="undoRemoveBtn" class="undo-btn">Undo All</button>
+              </div>
+            </div>
+            <!-- Add Items Panel -->
+            <div class="add-items-panel hidden" id="addItemsPanel">
+              <div class="add-items-header">
+                <h4>Add Items to Your Kit</h4>
+                <p>Click items to add them to your suitcase</p>
+              </div>
+              <div class="add-items-categories">
+                <button type="button" class="add-cat-btn active" data-category="clothing">👕 Clothing</button>
+                <button type="button" class="add-cat-btn" data-category="accessories">🎒 Accessories</button>
+                <button type="button" class="add-cat-btn" data-category="tech">🔌 Tech</button>
+                <button type="button" class="add-cat-btn" data-category="hygiene">🧴 Hygiene</button>
+              </div>
+              <div class="add-items-grid" id="addItemsGrid">
+              </div>
             </div>
             <div class="result-price">
               <span>Estimated Price</span>
               <span class="result-price-value" id="resultPrice">&euro;42</span>
+            </div>
+            <div class="result-price-note hidden" id="priceNote">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              <span id="priceNoteText">Price adjusted based on your changes</span>
             </div>
             <a href="#packages" class="btn btn-primary btn-block">Book This Package</a>
           </div>
@@ -712,7 +742,7 @@
             <svg class="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="faq-answer">
-            <p>We're currently live at Istanbul Airport (IGA) and Sabiha G&ouml;k&ccedil;en Airport (ISG). We're planning expansion to Ankara Esenbo&#287;a, Antalya, Izmir Adnan Menderes, and select European airports in 2026.</p>
+            <p>We're currently live at Istanbul Airport (IGA) and Sabiha G&ouml;k&ccedil;en Airport (ISG).</p>
           </div>
         </div>
       </div>
