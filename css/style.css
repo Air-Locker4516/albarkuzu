@@ -443,8 +443,8 @@ img { max-width: 100%; display: block; }
 /* Hero visual - phone mockup */
 .hero-visual {
   position: absolute;
-  right: 8%;
-  top: 50%;
+  right: 5%;
+  top: 55%;
   transform: translateY(-50%);
   z-index: 2;
   animation: fadeInRight 1s ease 0.5s both;
