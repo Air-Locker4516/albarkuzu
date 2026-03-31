@@ -305,39 +305,14 @@ function openOrderModal(data) {
 }
 
 function initOrderModal() {
-  // Destination select for order
-  const orderDest = document.getElementById('orderDestination');
-  const orderDate = document.getElementById('orderDate');
-
-  // Set min date to today
-  if (orderDate) {
-    const today = new Date().toISOString().split('T')[0];
-    orderDate.min = today;
-    orderDate.value = today;
-  }
-
   // Confirm order
   document.getElementById('confirmOrderBtn').addEventListener('click', () => {
-    const dest = orderDest.value;
-    const date = orderDate.value;
-
-    if (!dest) {
-      showToast('Please select a destination.', 'error');
-      return;
-    }
-    if (!date) {
-      showToast('Please select a travel date.', 'error');
-      return;
-    }
-
     const packageName = document.getElementById('orderPackageName').textContent;
     const price = document.getElementById('orderPrice').textContent;
 
     const result = AuthManager.placeOrder({
       packageName,
       price,
-      destination: dest,
-      travelDate: date,
     });
 
     if (result.ok) {
@@ -346,9 +321,6 @@ function initOrderModal() {
       document.getElementById('orderSuccessSection').classList.remove('hidden');
       document.getElementById('successOrderId').textContent = result.order.id;
       document.getElementById('successPackage').textContent = result.order.packageName;
-      document.getElementById('successDestination').textContent = dest;
-      document.getElementById('successDate').textContent = date;
-
     }
   });
 }
@@ -394,19 +366,11 @@ function renderMyOrders() {
       <div class="order-card-body">
         <div class="order-detail">
           <span class="order-label">Package</span>
-          <span class="order-value">${order.packageName}</span>
-        </div>
-        <div class="order-detail">
-          <span class="order-label">Destination</span>
-          <span class="order-value">${order.destination}</span>
-        </div>
-        <div class="order-detail">
-          <span class="order-label">Travel Date</span>
-          <span class="order-value">${order.travelDate}</span>
+          <span class="order-value">${order.packageName || 'N/A'}</span>
         </div>
         <div class="order-detail">
           <span class="order-label">Price</span>
-          <span class="order-value order-price">${order.price}</span>
+          <span class="order-value order-price">${order.price || 'N/A'}</span>
         </div>
       </div>
       <div class="order-card-footer">

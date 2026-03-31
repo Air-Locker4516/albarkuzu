@@ -908,7 +908,7 @@
         <div class="order-modal-header">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><path d="M12 11v6M9 14h6"/></svg>
           <h3>Confirm Your Order</h3>
-          <p>Complete the details below to book your package</p>
+          <p>Review your package and confirm your purchase</p>
         </div>
         <div class="order-summary-card">
           <div class="order-summary-row">
@@ -919,22 +919,6 @@
             <span>Price</span>
             <strong class="order-highlight" id="orderPrice">&euro;75</strong>
           </div>
-        </div>
-        <div class="form-group">
-          <label for="orderDestination">Destination</label>
-          <select id="orderDestination" required>
-            <option value="">Select your destination</option>
-            <option value="London, UK">London, UK</option>
-            <option value="Paris, France">Paris, France</option>
-            <option value="Berlin, Germany">Berlin, Germany</option>
-            <option value="Rome, Italy">Rome, Italy</option>
-            <option value="Barcelona, Spain">Barcelona, Spain</option>
-            <option value="Amsterdam, Netherlands">Amsterdam, Netherlands</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="orderDate">Travel Date</label>
-          <input type="date" id="orderDate" required>
         </div>
         <button type="button" class="btn btn-primary btn-block btn-lg" id="confirmOrderBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
@@ -957,14 +941,6 @@
             <div class="success-detail-row">
               <span>Package</span>
               <strong id="successPackage">Standard</strong>
-            </div>
-            <div class="success-detail-row">
-              <span>Destination</span>
-              <strong id="successDestination">London</strong>
-            </div>
-            <div class="success-detail-row">
-              <span>Travel Date</span>
-              <strong id="successDate">2026-04-01</strong>
             </div>
           </div>
           <div class="success-qr">
