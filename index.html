@@ -32,8 +32,28 @@
         <li><a href="#faq">FAQ</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="#packages" class="btn btn-outline-light btn-sm">View Plans</a>
-        <a href="#hero-cta" class="btn btn-primary btn-sm">Get Started</a>
+        <div id="authButtons">
+          <button class="btn btn-outline-light btn-sm" onclick="ModalManager.open('authModal')">Login</button>
+          <button class="btn btn-primary btn-sm" onclick="ModalManager.open('authModal'); document.querySelector('[data-tab=register]').click();">Sign Up</button>
+        </div>
+        <div id="userMenu" class="user-menu hidden">
+          <button class="user-menu-trigger" id="userMenuTrigger">
+            <div class="user-avatar-sm" id="userAvatarText">AD</div>
+            <span id="userNameDisplay">Admin</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <button class="dropdown-item" id="myOrdersBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+              My Orders
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item dropdown-logout" id="logoutBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -104,15 +124,7 @@
               <div class="app-card-meta">Istanbul IST &rarr; London LHR</div>
             </div>
             <div class="app-qr">
-              <div class="qr-grid">
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-              </div>
+              <img src="assets/QR_code.svg" alt="QR Code" class="hero-qr-img" />
               <span class="qr-label">Scan at Locker</span>
             </div>
             <div class="app-status">
@@ -273,7 +285,7 @@
               QR instant pickup
             </li>
           </ul>
-          <a href="#" class="btn btn-outline btn-block">Select Handbag</a>
+          <a href="#" class="btn btn-outline btn-block" data-package="Handbag Package" data-price="15">Select Handbag</a>
         </div>
 
         <!-- Economy -->
@@ -310,7 +322,7 @@
               Return at any airport locker
             </li>
           </ul>
-          <a href="#" class="btn btn-outline btn-block">Select Economy</a>
+          <a href="#" class="btn btn-outline btn-block" data-package="Economy Package" data-price="35">Select Economy</a>
         </div>
 
         <!-- Standard (Popular) -->
@@ -352,7 +364,7 @@
               Loyalty points on every order
             </li>
           </ul>
-          <a href="#" class="btn btn-primary btn-block">Select Standard</a>
+          <a href="#" class="btn btn-primary btn-block" data-package="Standard Package" data-price="75">Select Standard</a>
         </div>
 
         <!-- Premium -->
@@ -393,7 +405,7 @@
               Curated seasonal wardrobes
             </li>
           </ul>
-          <a href="#" class="btn btn-gold btn-block">Go Premium</a>
+          <a href="#" class="btn btn-gold btn-block" data-package="Premium Package" data-price="139">Go Premium</a>
         </div>
       </div>
     </div>
@@ -566,7 +578,7 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
               <span id="priceNoteText">Price adjusted based on your changes</span>
             </div>
-            <a href="#packages" class="btn btn-primary btn-block">Book This Package</a>
+            <a href="#" class="btn btn-primary btn-block" id="bookDemoPackage">Book This Package</a>
           </div>
         </div>
       </div>
@@ -832,6 +844,151 @@
     </div>
   </footer>
 
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
+
+  <!-- ===== AUTH MODAL ===== -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card auth-modal">
+      <button class="modal-close">&times;</button>
+      <div class="auth-header">
+        <div class="auth-logo">
+          <svg class="logo-icon" viewBox="0 0 40 40" fill="none">
+            <rect width="40" height="40" rx="10" fill="url(#logoGrad3)"/>
+            <path d="M12 28V14a2 2 0 012-2h12a2 2 0 012 2v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 28h20" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="3" stroke="#fff" stroke-width="1.5"/>
+            <defs><linearGradient id="logoGrad3" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#F5A623"/><stop offset="1" stop-color="#FF6B35"/></linearGradient></defs>
+          </svg>
+          <span>Air-Locker</span>
+        </div>
+        <p>Sign in to your account or create a new one</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="register">Register</button>
+      </div>
+      <form class="auth-form active" id="loginForm">
+        <div class="auth-error hidden" id="loginError"></div>
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" placeholder="Enter your username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Login</button>
+      </form>
+      <form class="auth-form" id="registerForm">
+        <div class="auth-error hidden" id="registerError"></div>
+        <div class="form-group">
+          <label for="regName">Full Name</label>
+          <input type="text" id="regName" placeholder="Enter your full name" required>
+        </div>
+        <div class="form-group">
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" placeholder="Choose a username" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="regPassword">Password</label>
+          <input type="password" id="regPassword" placeholder="Choose a password" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== ORDER MODAL ===== -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal-card order-modal">
+      <button class="modal-close">&times;</button>
+      <!-- Confirm Section -->
+      <div id="orderConfirmSection">
+        <div class="order-modal-header">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><path d="M12 11v6M9 14h6"/></svg>
+          <h3>Confirm Your Order</h3>
+          <p>Complete the details below to book your package</p>
+        </div>
+        <div class="order-summary-card">
+          <div class="order-summary-row">
+            <span>Package</span>
+            <strong id="orderPackageName">Standard Package</strong>
+          </div>
+          <div class="order-summary-row">
+            <span>Price</span>
+            <strong class="order-highlight" id="orderPrice">&euro;75</strong>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="orderDestination">Destination</label>
+          <select id="orderDestination" required>
+            <option value="">Select your destination</option>
+            <option value="London, UK">London, UK</option>
+            <option value="Paris, France">Paris, France</option>
+            <option value="Berlin, Germany">Berlin, Germany</option>
+            <option value="Rome, Italy">Rome, Italy</option>
+            <option value="Barcelona, Spain">Barcelona, Spain</option>
+            <option value="Amsterdam, Netherlands">Amsterdam, Netherlands</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="orderDate">Travel Date</label>
+          <input type="date" id="orderDate" required>
+        </div>
+        <button type="button" class="btn btn-primary btn-block btn-lg" id="confirmOrderBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+          Confirm Order
+        </button>
+      </div>
+      <!-- Success Section -->
+      <div id="orderSuccessSection" class="hidden">
+        <div class="order-success">
+          <div class="success-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg>
+          </div>
+          <h3>Order Confirmed!</h3>
+          <p>Your suitcase is being prepared</p>
+          <div class="success-details">
+            <div class="success-detail-row">
+              <span>Order ID</span>
+              <strong id="successOrderId">ORD-123456</strong>
+            </div>
+            <div class="success-detail-row">
+              <span>Package</span>
+              <strong id="successPackage">Standard</strong>
+            </div>
+            <div class="success-detail-row">
+              <span>Destination</span>
+              <strong id="successDestination">London</strong>
+            </div>
+            <div class="success-detail-row">
+              <span>Travel Date</span>
+              <strong id="successDate">2026-04-01</strong>
+            </div>
+          </div>
+          <div class="success-qr">
+            <p>Your Pickup QR Code</p>
+            <img src="assets/QR_code.svg" alt="Pickup QR Code" class="success-qr-img" />
+            <span class="qr-label">Scan at any Air-Locker station</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-block" onclick="ModalManager.close('orderModal')">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MY ORDERS MODAL ===== -->
+  <div class="modal-overlay" id="ordersModal">
+    <div class="modal-card orders-modal">
+      <button class="modal-close">&times;</button>
+      <div class="orders-header">
+        <h3>My Orders</h3>
+        <p>Your package purchase history</p>
+      </div>
+      <div class="orders-list" id="ordersList"></div>
+    </div>
+  </div>
+
 </body>
 </html>

@@ -288,6 +288,16 @@ demoForm.addEventListener('submit', (e) => {
   // Show result
   demoResult.querySelector('.result-placeholder')?.classList.add('hidden');
   resultCard.classList.remove('hidden');
+
+  // Wire up demo book button
+  const bookBtn = document.getElementById('bookDemoPackage');
+  bookBtn.onclick = (e) => {
+    e.preventDefault();
+    const pkgName = document.getElementById('resultPackage').textContent;
+    const priceText = document.getElementById('resultPrice').textContent;
+    const priceNum = priceText.replace(/[^\d]/g, '');
+    handlePackageSelect(pkgName, priceNum);
+  };
 });
 
 // Render items list
@@ -427,6 +437,14 @@ function updatePrice() {
 
 // Customize toggle
 document.getElementById('customizeToggle').addEventListener('click', () => {
+  // Require login to customize
+  const user = AuthManager.getCurrentUser();
+  if (!user) {
+    showToast('Please login to customize your package.', 'info');
+    setTimeout(() => ModalManager.open('authModal'), 300);
+    return;
+  }
+
   isCustomizeMode = !isCustomizeMode;
   const btn = document.getElementById('customizeToggle');
   const panel = document.getElementById('addItemsPanel');
